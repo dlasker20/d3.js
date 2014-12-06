@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Exploration 6</title>
+		
+		<style>
+		
+			body,html
+			{
+				margin:0px;
+			}
+			
+		</style>
+		
+		
+		<script src='jquery-1.10.2.min.js'></script>
+		<script src='d3.min.js'></script>
+		<script>
+			
+			$(document).ready(function(){
+				var myImg = new Image();
+				
+				myImg.onload = function() {
+				
+					var context = document.getElementById('canvasId').getContext('2d');
+					context.drawImage(myImg, 0, 0);
+					var width = myImg.width;
+					var height = myImg.height;
+					data = context.getImageData(0, 0, width, height).data;
+					
+					var color = new Array();
+					
+					
+					for(i = 0; i < data.length; i++)
+					{
+						var colorString = "rgb(";
+						colorString += data[i] + ",";
+						colorString += data[i+1] + ",";
+						colorString += data[i+2] + ")";
+						
+						color.push(colorString);
+						
+						i += 3;
+						
+					}
+					
+					plotCircles(color,width,height);
+					
+					
+
+				};
+				
+				myImg.src = 'croc.png';
+				
+				
+				function plotCircles(data,width,height)
+				{
+					var svg = d3.select('svg');
+					var circles = svg.selectAll("circle").data(data);
+					
+					var xCount = 1;
+					
+					var yCount = 1;
+					var yColumn = 1;
+					
+					circles.enter()
+						.append("circle")
+						.style("fill", "white")
+						.attr({"r":2,"cx":function()
+						{
+							if(yCount > height)
+							{
+								yCount = 1;
+							}
+							yCount += 1
+							return 4 * yCount;
+							
+							
+						},"cy":function()
+						{ 
+							if(xCount > width)
+							{
+								xCount = 1;
+								yColumn += 1;
+							}
+							xCount += 1;
+							return yColumn * 4;
+							
+							
+						}})
+						.transition()
+						.duration(5000)
+						.style("fill", function(d){ return d});
+				
+				}
+				
+			});
+		
+		
+		</script>
+		
+	</head>
+	
+	<body>
+	
+	<canvas id='canvasId' width='500' height='500'></canvas>
+	
+	<svg width='800' height='800'></svg>
+	</body>
+</html>
